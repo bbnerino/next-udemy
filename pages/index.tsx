@@ -2,12 +2,17 @@ import path from "path";
 import fs from "fs/promises";
 
 import Link from "next/link";
+import Head from "next/head";
 
 function HomePage(props: any) {
   const { products } = props;
 
   return (
     <ul>
+      <Head>
+        <title>나의 Next</title>
+        <meta name="description" content="FIND EVENT" />
+      </Head>
       {products.map((product: any) => (
         <li key={product.id}>
           <Link href={`/products/${product.id}`}>{product.title}</Link>
