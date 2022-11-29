@@ -1,34 +1,48 @@
-import React,{useEffect} from 'react'
-import { getAllEvents, getFeaturedEvents } from '../../helpers/api-util'
-import EventList from '../components/event/event-list'
+import { Fragment } from 'react';
+import { useRouter } from 'next/router';
+import Head from 'next/head';
 
-const EventPage = (props) => {
-  useEffect(() => {
-    console.log('event1',props.events)
-   }, [])
+import { getAllEvents } from '../../helpers/api-util';
+import EventList from '../../components/events/event-list';
+import EventsSearch from '../../components/events/events-search';
+
+function AllEventsPage(props) {
+  const router = useRouter();
+  const { events } = props;
+
+  function findEventsHandler(year, month) {
+    const fullPath = `/events/${year}/${month}`;
+
+    router.push(fullPath);
+  }
+
   return (
-    <div>
-      <EventList events={props.events}/>
-    </div>
-  )
+    <Fragment>
+      <Head>
+        <title>All my events</title>
+      </Head>
+      <Head>
+        <title>All Events</title>
+        <meta
+          name='description'
+          content='Find a lot of great events that allow you to evolve...'
+        />
+      </Head>
+      <EventsSearch onSearch={findEventsHandler} />
+      <EventList items={events} />
+    </Fragment>
+  );
 }
 
-export default EventPage
+export async function getStaticProps() {
+  const events = await getAllEvents();
 
-
-export const getStaticProps= async () =>{
-  // const data = await getFeaturedEvents()
-  const data = await getAllEvents()
-
-  if(data.length===0){
-    return({
-      notFound:true
-    })
-  }
   return {
-    props:{
-      events:data,
+    props: {
+      events: events,
     },
-    revalidate:600
-  }
+    revalidate: 60
+  };
 }
+
+export default AllEventsPage;
